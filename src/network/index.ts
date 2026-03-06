@@ -13,27 +13,16 @@ export { createSession } from './sessionManager'
 export type { ConnectionState, DiscoveryMethod, PeerEntry } from './peerRegistry'
 export { PeerRegistry } from './peerRegistry'
 
-export type { BleAdvertisement, BleHandshakePayload, BleHandshakeResponse } from './bleDiscovery'
-export {
-  BLE_SERVICE_UUID,
-  BLE_HANDSHAKE_CHAR_UUID,
-  BleHostingUnsupportedError,
-  isBleSupported,
-  hashPasscode,
-  validateHandshake,
-  startBleHosting,
-  joinViaBle,
-} from './bleDiscovery'
-
-export type { QrInvitePayload, QrResponsePayload } from './qrBootstrap'
+export type { QrInvitePayload, QrResponsePayload } from './qrDiscovery'
 export {
   isQrGenerationSupported,
   isBarcodeScannerSupported,
+  generateQrInvitePayload,
+  generateQrResponsePayload,
   generateQrInvite,
   generateQrResponse,
   parseQrInvite,
-  parseQrResponse,
+  parseQrResponsePayload,
   startCameraStream,
   scanQrFromVideo,
-} from './qrBootstrap'
-export { initializeNodeRuntime } from './nodeRuntime'
+} from './qrDiscovery'

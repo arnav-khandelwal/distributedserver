@@ -14,7 +14,7 @@ export type ConnectionState =
   | 'rejected'
   | 'disconnected'
 
-export type DiscoveryMethod = 'BLE' | 'QR'
+export type DiscoveryMethod = 'QR'
 
 export interface PeerEntry {
   /** Remote node's unique ID. */

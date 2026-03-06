@@ -61,7 +61,10 @@ function SectionCard({ title, statusLabel = 'not initialized yet', children }: S
 /** Top-level dashboard representing one node in the distributed network */
 export default function NodeDashboard() {
   const { runtime, runBenchmark } = useNodeRuntime()
-  const sessionState = useSession(runtime?.nodeId ?? '')
+  const sessionState = useSession(runtime?.nodeId ?? '', {
+    deviceType: runtime?.deviceType ?? 'unknown',
+    localBenchmarkScore: runtime?.benchmarkDetails.localBenchmarkScore ?? null,
+  })
   const [modalOpen, setModalOpen] = useState(false)
 
   const bd = runtime?.benchmarkDetails
