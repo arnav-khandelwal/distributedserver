@@ -5,6 +5,7 @@
  *   - WebRTC connection management
  *   - Peer discovery and signaling
  *   - Message routing and serialization
- *
- * Placeholder — not yet implemented.
  */
+
+export type { DeviceType, NodeRuntime } from './nodeRuntime'
+export { initializeNodeRuntime } from './nodeRuntime'

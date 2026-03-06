@@ -1,3 +1,6 @@
+import React from 'react'
+import { useNodeRuntime } from '../hooks/useNodeRuntime'
+
 /** Placeholder row rendered inside a card */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -31,6 +34,8 @@ function SectionCard({ title, statusLabel = 'not initialized yet', children }: S
 
 /** Top-level dashboard representing one node in the distributed network */
 export default function NodeDashboard() {
+  const runtime = useNodeRuntime()
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-10">
       {/* Page header */}
@@ -48,10 +53,26 @@ export default function NodeDashboard() {
       {/* Dashboard grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* ── Node Status ── */}
-        <SectionCard title="Node Status">
-          <InfoRow label="Node ID" value="—" />
-          <InfoRow label="Device Type" value="—" />
-          <InfoRow label="Compute Score" value="—" />
+        <SectionCard
+          title="Node Status"
+          statusLabel={runtime ? 'active' : 'initializing…'}
+        >
+          {runtime === null ? (
+            <p className="text-slate-500 text-sm animate-pulse">Initializing node runtime…</p>
+          ) : (
+            <>
+              <InfoRow label="Node ID" value={runtime.nodeId} />
+              <InfoRow label="Device Type" value={runtime.deviceType} />
+              <InfoRow label="CPU Cores" value={runtime.cpuCores !== null ? String(runtime.cpuCores) : 'unknown'} />
+              <InfoRow label="Memory Estimate" value={runtime.memoryEstimate !== null ? `${runtime.memoryEstimate} GB` : 'unknown'} />
+              <InfoRow label="Browser" value={runtime.browserName ?? 'unknown'} />
+              <InfoRow label="Platform" value={runtime.platform ?? 'unknown'} />
+              <InfoRow
+                label="Session Start"
+                value={runtime.sessionStartTime.toLocaleTimeString()}
+              />
+            </>
+          )}
         </SectionCard>
 
         {/* ── Peer Network ── */}
@@ -81,7 +102,7 @@ export default function NodeDashboard() {
 
       {/* Footer */}
       <footer className="mt-10 text-center text-slate-600 text-xs font-mono">
-        distributed-node v0.1.0 — scaffold
+        distributed-node v0.1.0 — node runtime active
       </footer>
     </main>
   )
