@@ -73,7 +73,7 @@ function QrScannerView({
   onCancel,
   prompt,
 }: {
-  videoRef: React.RefObject<HTMLVideoElement | null>
+  videoRef: React.RefObject<HTMLVideoElement>
   onCancel: () => void
   prompt: string
 }) {
