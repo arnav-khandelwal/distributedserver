@@ -8,6 +8,17 @@
 
 export type DeviceType = 'mobile' | 'tablet' | 'desktop'
 
+/** Detailed results from the most recent benchmark run, plus live status. */
+export interface BenchmarkDetails {
+  localBenchmarkScore: number | null
+  operationsCompleted: number | null
+  durationMs: number | null
+  operationsPerSecond: number | null
+  timestamp: Date | null
+  /** True while a benchmark is actively running. */
+  isRunning: boolean
+}
+
 export interface NodeRuntime {
   /** Randomly generated UUID, stable for the lifetime of the browser session. */
   nodeId: string
@@ -23,13 +34,8 @@ export interface NodeRuntime {
   browserName: string | null
   /** Operating-system / platform string, or null if unavailable. */
   platform: string | null
-  /**
-   * Normalised CPU throughput score produced by the benchmark module.
-   * null until the benchmark completes.
-   */
-  computeScore: number | null
-  /** True once the benchmark has finished running. */
-  benchmarkCompleted: boolean
+  /** Live benchmark state and results. isRunning is true while a run is in progress. */
+  benchmarkDetails: BenchmarkDetails
 }
 
 // ---------------------------------------------------------------------------
@@ -82,7 +88,7 @@ function getMemoryEstimate(): number | null {
 
 /**
  * Collects all static device metadata and returns a NodeRuntime.
- * computeScore starts as null and is filled in after the async benchmark runs.
+ * benchmarkDetails starts with all nulls; the hook fills them in asynchronously.
  * Intended to be called once at application startup.
  */
 export function initializeNodeRuntime(): NodeRuntime {
@@ -94,7 +100,13 @@ export function initializeNodeRuntime(): NodeRuntime {
     memoryEstimate: getMemoryEstimate(),
     browserName: detectBrowserName(),
     platform: navigator.platform || null,
-    computeScore: null,
-    benchmarkCompleted: false,
+    benchmarkDetails: {
+      localBenchmarkScore: null,
+      operationsCompleted: null,
+      durationMs: null,
+      operationsPerSecond: null,
+      timestamp: null,
+      isRunning: false,
+    },
   }
 }

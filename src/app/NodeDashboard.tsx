@@ -1,5 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNodeRuntime } from '../hooks/useNodeRuntime'
+import { useSession } from '../hooks/useSession'
+import { BenchmarkModal } from '../components/BenchmarkModal'
+import { SessionPanel } from '../components/SessionPanel'
 
 /** Placeholder row rendered inside a card */
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -7,6 +10,29 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between py-1">
       <span className="text-slate-400 text-sm">{label}</span>
       <span className="text-slate-200 text-sm font-mono">{value}</span>
+    </div>
+  )
+}
+
+/** Clickable info row — renders the value as a tappable element */
+function ClickableInfoRow({
+  label,
+  value,
+  onClick,
+}: {
+  label: string
+  value: string
+  onClick: () => void
+}) {
+  return (
+    <div className="flex items-center justify-between py-1">
+      <span className="text-slate-400 text-sm">{label}</span>
+      <button
+        onClick={onClick}
+        className="text-indigo-400 hover:text-indigo-300 text-sm font-mono underline underline-offset-2 transition-colors cursor-pointer"
+      >
+        {value}
+      </button>
     </div>
   )
 }
@@ -34,7 +60,16 @@ function SectionCard({ title, statusLabel = 'not initialized yet', children }: S
 
 /** Top-level dashboard representing one node in the distributed network */
 export default function NodeDashboard() {
-  const runtime = useNodeRuntime()
+  const { runtime, runBenchmark } = useNodeRuntime()
+  const sessionState = useSession(runtime?.nodeId ?? '')
+  const [modalOpen, setModalOpen] = useState(false)
+
+  const bd = runtime?.benchmarkDetails
+  const scoreLabel = bd?.isRunning
+    ? 'Running benchmark…'
+    : bd?.localBenchmarkScore !== null && bd?.localBenchmarkScore !== undefined
+    ? String(bd.localBenchmarkScore)
+    : 'Running benchmark…'
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-10">
@@ -67,9 +102,10 @@ export default function NodeDashboard() {
               <InfoRow label="Memory Estimate" value={runtime.memoryEstimate !== null ? `${runtime.memoryEstimate} GB` : 'unknown'} />
               <InfoRow label="Browser" value={runtime.browserName ?? 'unknown'} />
               <InfoRow label="Platform" value={runtime.platform ?? 'unknown'} />
-              <InfoRow
-                label="Compute Score"
-                value={runtime.benchmarkCompleted ? String(runtime.computeScore) : 'Running benchmark…'}
+              <ClickableInfoRow
+                label="Local Benchmark Score"
+                value={scoreLabel}
+                onClick={() => setModalOpen(true)}
               />
               <InfoRow
                 label="Session Start"
@@ -80,11 +116,13 @@ export default function NodeDashboard() {
         </SectionCard>
 
         {/* ── Peer Network ── */}
-        <SectionCard title="Peer Network">
+        <SectionCard title="Peer Network" statusLabel={`${sessionState.peers.length} peer${sessionState.peers.length !== 1 ? 's' : ''}`}>
           <p className="text-slate-500 text-sm">
-            Peer discovery and WebRTC connections will be established here.
+            Use the Session Control panel below to discover and connect peers.
           </p>
-          <div className="mt-2 text-slate-600 text-xs font-mono">0 peers connected</div>
+          <div className="mt-2 text-slate-600 text-xs font-mono">
+            {sessionState.peers.length === 0 ? '0 peers connected' : `${sessionState.peers.length} peer(s) discovered`}
+          </div>
         </SectionCard>
 
         {/* ── Compute System ── */}
@@ -102,12 +140,24 @@ export default function NodeDashboard() {
           </p>
           <div className="mt-2 text-slate-600 text-xs font-mono">0 entries cached</div>
         </SectionCard>
+
+        {/* ── Session Control (full width) ── */}
+        <SessionPanel sessionState={sessionState} nodeId={runtime?.nodeId} />
       </div>
 
       {/* Footer */}
       <footer className="mt-10 text-center text-slate-600 text-xs font-mono">
         distributed-node v0.1.0 — node runtime active
       </footer>
+
+      {/* Benchmark modal — only rendered when open */}
+      {modalOpen && bd && (
+        <BenchmarkModal
+          details={bd}
+          onClose={() => setModalOpen(false)}
+          onRerun={() => runBenchmark()}
+        />
+      )}
     </main>
   )
 }

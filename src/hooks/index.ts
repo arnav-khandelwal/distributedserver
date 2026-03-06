@@ -5,3 +5,7 @@
  */
 
 export { useNodeRuntime } from './useNodeRuntime'
+export type { UseNodeRuntimeResult } from './useNodeRuntime'
+
+export { useSession } from './useSession'
+export type { UseSessionResult, SessionStatus } from './useSession'
