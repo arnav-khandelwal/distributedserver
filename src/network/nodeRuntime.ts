@@ -23,6 +23,13 @@ export interface NodeRuntime {
   browserName: string | null
   /** Operating-system / platform string, or null if unavailable. */
   platform: string | null
+  /**
+   * Normalised CPU throughput score produced by the benchmark module.
+   * null until the benchmark completes.
+   */
+  computeScore: number | null
+  /** True once the benchmark has finished running. */
+  benchmarkCompleted: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -74,7 +81,8 @@ function getMemoryEstimate(): number | null {
 // ---------------------------------------------------------------------------
 
 /**
- * Collects all device metadata and returns a fully-populated NodeRuntime.
+ * Collects all static device metadata and returns a NodeRuntime.
+ * computeScore starts as null and is filled in after the async benchmark runs.
  * Intended to be called once at application startup.
  */
 export function initializeNodeRuntime(): NodeRuntime {
@@ -86,5 +94,7 @@ export function initializeNodeRuntime(): NodeRuntime {
     memoryEstimate: getMemoryEstimate(),
     browserName: detectBrowserName(),
     platform: navigator.platform || null,
+    computeScore: null,
+    benchmarkCompleted: false,
   }
 }

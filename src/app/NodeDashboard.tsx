@@ -68,6 +68,10 @@ export default function NodeDashboard() {
               <InfoRow label="Browser" value={runtime.browserName ?? 'unknown'} />
               <InfoRow label="Platform" value={runtime.platform ?? 'unknown'} />
               <InfoRow
+                label="Compute Score"
+                value={runtime.benchmarkCompleted ? String(runtime.computeScore) : 'Running benchmark…'}
+              />
+              <InfoRow
                 label="Session Start"
                 value={runtime.sessionStartTime.toLocaleTimeString()}
               />

@@ -1,11 +1,8 @@
 /**
  * compute/
  *
- * Future home of distributed computation logic:
- *   - Task definition and serialization
- *   - Work-stealing scheduler
- *   - Worker-thread / WASM execution engine
- *   - Result aggregation
- *
- * Placeholder — not yet implemented.
+ * Distributed computation logic for the node runtime.
  */
+
+export type { BenchmarkResult } from './benchmark'
+export { runCpuBenchmark } from './benchmark'
